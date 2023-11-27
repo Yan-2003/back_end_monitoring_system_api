@@ -59,9 +59,17 @@ class HinoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(HinoRequest $request, string $id)
     {
         //
+        $validated = $request->validated();
+        $hino = Hino::where('id' , $id)
+                            ->update($validated);
+        return [
+            'hino' => $hino,
+            'message' => 'successfully updated'
+        ];
+
     }
 
     /**

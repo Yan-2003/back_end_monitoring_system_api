@@ -32,6 +32,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::controller(HinoController::class)->group(function(){
         Route::get('/hino' , 'index');
         Route::post('/hino' , 'store');
+        Route::put('/hino/{id}' , 'update');
         Route::delete('/hino/{id}' , 'destroy');
     });
 
@@ -55,6 +56,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::controller(PassengerController::class)->group((function(){
         Route::get('/passengers', 'index');
         Route::post('/passengers' , 'store');
+        Route::put('/passengers/{id}' , 'update');
+        Route::delete('/passengers/{id}', 'destroy');
     }));
 
 

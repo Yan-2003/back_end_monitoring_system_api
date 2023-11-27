@@ -62,9 +62,19 @@ class PassengerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(PassengerRequest $request, string $id)
     {
         //
+        $validated = $request->validated();
+        $passenger = Passenger::where('pass_id' , $id)
+                    ->update($validated);
+
+        return [
+            'id' => $id,
+            'passenger' => $passenger,
+            'message' => 'successfully updated'
+        ];
+
     }
 
     /**
@@ -73,5 +83,11 @@ class PassengerController extends Controller
     public function destroy(string $id)
     {
         //
+        $passenger = Passenger::findOrFail($id);
+        $passenger->delete();
+        return [
+            'passenger' => $passenger,
+            'message' => 'successfully deleted'
+        ];
     }
 }
