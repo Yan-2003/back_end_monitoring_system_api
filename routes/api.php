@@ -23,12 +23,12 @@ use Illuminate\Support\Facades\Route;
 
 
 /* Private APIs */
-Route::post('/logout', [AuthController::class, 'logout']);
 Route::middleware('auth:sanctum')->group(function(){
-
-
+    
+    
     Route::get('/users' , [UserController::class , 'index']);
     Route::get('/isAuthorized' , [AuthController::class , 'isauthorizeUser']);
+    Route::post('/logout', [AuthController::class, 'logout']);
 
     Route::controller(HinoController::class)->group(function(){
         Route::get('/hino' , 'index');
