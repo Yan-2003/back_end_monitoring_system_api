@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\HinoRequest;
 use App\Models\Hino;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class HinoController extends Controller
 {
@@ -15,7 +16,16 @@ class HinoController extends Controller
     public function index()
     {
         //
-        return Hino::all();
+        $results = Hino::select('hino.*', DB::raw('COUNT(transactions.*) as trip'))
+        ->leftJoin('transactions', function ($join) {
+            $join->on('hino.id', '=', 'transactions.bus_id')
+                ->where(DB::raw('DATE(transactions.created_at)'), '=', DB::raw('CURRENT_DATE'));
+        })
+        ->groupBy('hino.id')
+        ->orderBy('trip', 'DESC')
+        ->get();
+
+        return $results;
     }
 
     /**
@@ -46,6 +56,9 @@ class HinoController extends Controller
     public function show(string $id)
     {
         //
+        $hino = Hino::findOrFail($id);
+
+        return $hino;
     }
 
     /**

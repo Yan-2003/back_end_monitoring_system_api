@@ -25,6 +25,29 @@ class TransactionController extends Controller
                  DB::raw("TO_CHAR(t.created_at, 'Mon DD YYYY') as date"),
                  DB::raw("TO_CHAR(t.created_at, 'HH:MI AM') as time"))
         ->where('t.user_id' , $user->id)
+        ->orderBy('date', 'DESC')
+        ->orderBy('time', 'DESC')
+        ->get();
+        return $results;
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function index_bus($id)
+    {
+        //
+        $results = DB::table('transactions as t')
+        ->join('hino as h', 't.bus_id', '=', 'h.id')
+        ->join('users as u' , 'u.id' , '=' , 't.user_id')
+        ->select('t.id', 't.origin', 't.user_id', 'h.name', 't.bus_id', 
+                DB::raw("CONCAT(u.first_name, ' ' , u.last_name) as full_name"),
+                DB::raw("TO_CHAR(t.created_at, 'Mon DD YYYY') as date"),
+                DB::raw("TO_CHAR(t.created_at, 'HH:MI AM') as time"))
+        ->where('h.id' , $id)
+        ->where(DB::raw('DATE(t.created_at)'), '=', DB::raw('CURRENT_DATE'))
+        ->orderBy('date', 'DESC')
+        ->orderBy('time', 'DESC')
         ->get();
         return $results;
     }
@@ -65,13 +88,51 @@ class TransactionController extends Controller
     {
         //
         $user = Auth::user();
-        $transaction_id = Transaction::findOrFail($id);
-        $transaction_id = Transaction::select('transactions.id', 'transactions.origin', 'transactions.user_id', 'transactions.bus_id', 'hino.name', 'transactions.created_at')
-            ->join('hino', 'hino.id', '=', 'transactions.bus_id')
-            ->where('transactions.id', $transaction_id['id'])
-            ->where('transactions.user_id',$user->id )
-            ->first();
-        return $transaction_id;
+        $transaction = Transaction::select(
+            'transactions.id', 
+            'hino.name',
+            'transactions.origin', 
+            DB::raw("CONCAT(TO_CHAR(transactions.created_at, 'Mon DD YYYY'), ' ', TO_CHAR(transactions.created_at, 'HH:MI AM')) as date_time"),
+            DB::raw("CONCAT(users.first_name, ' ', users.last_name) as dis_name"),
+            DB::raw("COUNT(passengers.*) as total_passengers"),
+            DB::raw("SUM(fare.fare) as total_collection"),
+            DB::raw("(SELECT COUNT(passengers.type) FROM passengers WHERE passengers.transaction_id = transactions.id AND passengers.type = 'regular') as regular"),
+            DB::raw("(SELECT COUNT(passengers.type) FROM passengers WHERE passengers.transaction_id = transactions.id AND passengers.type = 'sp') as sp")
+        )
+        ->join('hino', 'transactions.bus_id', '=', 'hino.id')
+        ->join('users', 'transactions.user_id', '=', 'users.id')
+        ->join('passengers', 'transactions.id', '=', 'passengers.transaction_id')
+        ->join('fare', function ($join) {
+            $join->on('passengers.type', '=', 'fare.type')
+                ->on('passengers.destination_id', '=', 'fare.destination_id');
+        })
+        ->join('destination', function ($join) {
+            $join->on('passengers.destination_id', '=', 'destination.id')
+                ->on('fare.destination_id', '=', 'destination.id');
+        })
+        ->where('transactions.id', $id)
+        ->where('users.id', $user->id)
+        ->groupBy('transactions.id', 'hino.name', 'users.first_name', 'users.last_name')
+        ->get();
+
+        return $transaction; 
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function showbus(string $id)
+    {
+        //
+        $user = Auth::user();
+        $transaction = Transaction::findOrFail($id);
+        
+        $transaction = Transaction::select()->join('hino' , 'hino.id' , '=' , 'transactions.bus_id')
+        ->where('transactions.id' ,$transaction['id'])
+        ->where('transactions.user_id' , $user->id)
+        ->first();
+
+        return $transaction;
     }
 
     /**
