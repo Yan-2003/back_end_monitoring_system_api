@@ -28,6 +28,7 @@ class Transaction extends Model
      */
     protected $fillable = [
         'user_id',
-        'bus_id'
+        'bus_id',
+        'origin'
     ];
 }

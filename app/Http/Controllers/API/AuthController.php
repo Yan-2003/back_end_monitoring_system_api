@@ -23,7 +23,7 @@ class AuthController extends Controller
     
         if (! $user || ! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
-                'message' => ['The provided email or password are incorrect.'],
+                'message' => 'The provided email or password are incorrect.'
             ]);
         }
 
@@ -48,6 +48,15 @@ class AuthController extends Controller
         ];
 
         return $response;
+
+    }
+
+    public function isauthorizeUser()
+    {
+
+        return [
+            "message"  => 'authorized'
+        ];
 
     }
 }

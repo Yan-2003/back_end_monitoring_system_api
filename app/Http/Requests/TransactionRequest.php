@@ -23,8 +23,8 @@ class TransactionRequest extends FormRequest
     {
         return [
             //
-            'user_id' => 'required',
-            'bus_id' => 'required'
+            'bus_id' => 'required',
+            'origin' => 'required'
         ];
     }
 }

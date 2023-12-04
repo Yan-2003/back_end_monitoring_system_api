@@ -12,10 +12,15 @@ class DestinationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index($origin, $type)
     {
         //
-        return Destination::all();
+        return Destination::select()
+                ->join('fare' , 'fare.destination_id' , '=', 'destination.id')
+                ->where('fare.type' , $type)
+                ->where('origin', $origin)
+                ->get();
+         
     }
 
     /**

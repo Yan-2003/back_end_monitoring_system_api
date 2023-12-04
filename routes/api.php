@@ -23,11 +23,12 @@ use Illuminate\Support\Facades\Route;
 
 
 /* Private APIs */
+Route::post('/logout', [AuthController::class, 'logout']);
 Route::middleware('auth:sanctum')->group(function(){
 
 
     Route::get('/users' , [UserController::class , 'index']);
-    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/isAuthorized' , [AuthController::class , 'isauthorizeUser']);
 
     Route::controller(HinoController::class)->group(function(){
         Route::get('/hino' , 'index');
@@ -37,7 +38,7 @@ Route::middleware('auth:sanctum')->group(function(){
     });
 
     Route::controller(DestinationController::class)->group(function(){
-        Route::get('/destinations' ,'index');
+        Route::get('/destinations/{origin}/{type}' ,'index');
         Route::post('/destinations', 'store');
     });
 
@@ -50,6 +51,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::controller(TransactionController::class)->group(function(){
         Route::get('/transactions', 'index');
         Route::post('/transactions', 'store');
+        Route::get('/transactions/{id}' , 'show');
+        Route::delete('/transactions/{id}' , 'destroy');
     });
 
 
@@ -59,9 +62,6 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::put('/passengers/{id}' , 'update');
         Route::delete('/passengers/{id}', 'destroy');
     }));
-
-
-
 });
 
 
