@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PassengerRequest;
 use App\Models\Passenger;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PassengerController extends Controller
 {
@@ -15,7 +16,20 @@ class PassengerController extends Controller
     public function index()
     {
         //
-        return Passenger::all();
+        $passengers = Passenger::select(
+            'passengers.type',
+            'destination.destination',
+            'hino.name',
+            'transactions.origin',
+            DB::raw("TO_CHAR(passengers.created_at, 'Mon DD YYYY, HH:MI AM') as date_time")
+        )
+            ->join('destination', 'destination.id', '=', 'passengers.destination_id')
+            ->join('transactions', 'transactions.id', '=', 'passengers.transaction_id')
+            ->join('hino', 'hino.id', '=', 'transactions.bus_id')
+            ->orderBy('passengers.created_at', 'DESC')
+            ->get();
+
+        return $passengers;
     }
 
     /**

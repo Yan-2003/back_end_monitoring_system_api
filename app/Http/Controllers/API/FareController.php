@@ -61,9 +61,17 @@ class FareController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(FareRequest $request, string $id , string $type)
     {
         //
+        $validated = $request->validated();
+        $fare = Fare::where('destination_id' , $id)
+                    ->where('type' , $type)
+                    ->update($validated);
+        return [
+            'fare' => $fare,
+            'message' => 'successfully updated.'
+        ];
     }
 
     /**

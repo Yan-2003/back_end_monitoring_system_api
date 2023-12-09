@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\AdminController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\DestinationController;
 use App\Http\Controllers\API\FareController;
@@ -22,6 +23,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 
+
+
+
 /* Private APIs */
 Route::middleware('auth:sanctum')->group(function(){
     
@@ -39,13 +43,18 @@ Route::middleware('auth:sanctum')->group(function(){
     });
 
     Route::controller(DestinationController::class)->group(function(){
+        Route::get('/destinations', 'all');
         Route::get('/destinations/{origin}/{type}' ,'index');
+        Route::get('/destinations/{id}' , 'show');
         Route::post('/destinations', 'store');
+        Route::put('/destinations/{id}' , 'update');
+        Route::delete('/destinations/{id}', 'destroy');
     });
 
     Route::controller(FareController::class)->group(function(){
         Route::get('/fare', 'index');
         Route::post('/fare', 'store');
+        Route::put('/fare/{id}/{type}' , 'update')->name('fare.update');
     });
 
 
@@ -72,6 +81,10 @@ Route::middleware('auth:sanctum')->group(function(){
  /* Public APIs */
 Route::post('/login' , [AuthController::class , 'login'])->name('user.login');
 
-
 /* Creating user */
-Route::post('/users' , [UserController::class , 'store']);
+Route::post('/register' , [UserController::class , 'store']);
+
+Route::controller(AdminController::class)->group(function(){
+    Route::post('/admin/login' , 'login');
+    Route::post('/admin' , 'store');
+});

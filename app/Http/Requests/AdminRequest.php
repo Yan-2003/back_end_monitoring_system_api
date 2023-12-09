@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class FareRequest extends FormRequest
+class AdminRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,17 +21,10 @@ class FareRequest extends FormRequest
      */
     public function rules(): array
     {
-        if(request()->routeIs('fare.update')){
-            return [
-                'fare' => 'required|integer'
-            ];
-        }else{
-            return [
-                //
-                'type' => 'required|string|max:50',
-                'fare' => 'required|integer',
-                'destination_id' => 'required'
-            ];
-        }
+        return [
+            //
+            "username" => "required",
+            "password" => "required|min:8"
+        ];
     }
 }

@@ -5,10 +5,23 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DestinationRequest;
 use App\Models\Destination;
+use App\Models\Fare;
 use Illuminate\Http\Request;
 
 class DestinationController extends Controller
 {
+
+     /**
+     * Display a listing of the resource.
+     */
+    public function all()
+    {
+        //
+        $destination = Destination::select('*')
+                        ->orderBy('created_at' , 'ASC')
+                        ->get();
+        return $destination;
+    }
     /**
      * Display a listing of the resource.
      */
@@ -55,6 +68,20 @@ class DestinationController extends Controller
     public function show(string $id)
     {
         //
+        $destination = Destination::select('*')
+        ->addSelect([
+            'regular' => Fare::select('fare')
+                ->where('type', 'regular')
+                ->whereColumn('destination_id', 'destination.id')
+                ->limit(1),
+            'sp' => Fare::select('fare')
+                ->where('type', 'sp')
+                ->whereColumn('destination_id', 'destination.id')
+                ->limit(1),
+        ])
+        ->where('id', $id)
+        ->first();
+        return $destination;
     }
 
     /**
@@ -68,9 +95,16 @@ class DestinationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(DestinationRequest $request, string $id)
     {
         //
+        $validated = $request->validated();
+        $destination = Destination::where('id' , $id)
+                        ->update($validated);
+        return [
+            'destination' => $destination,
+            'message' => 'successfully updated.'
+        ];
     }
 
     /**
@@ -79,5 +113,17 @@ class DestinationController extends Controller
     public function destroy(string $id)
     {
         //
+        $fare = Fare::select()
+                        ->where('destination_id' , $id)
+                        ->delete();
+        
+        $destination = Destination::findOrFail($id);
+        $destination->delete();
+
+        return [
+            'fare' => $fare,
+            'destination' => $destination,
+            'message' => 'successfully deleted.'
+        ];
     }
 }

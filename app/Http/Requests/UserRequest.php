@@ -34,7 +34,6 @@ class UserRequest extends FormRequest
                 'first_name' => 'required|string|max:255',
                 'middle_name' => 'string|max:255',
                 'last_name' => 'required|string|max:255',
-                'type' => 'required|string',
                 'password' => 'required|min:8',
             ];
         }
