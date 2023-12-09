@@ -30,9 +30,16 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->group(function(){
     
     
-    Route::get('/users' , [UserController::class , 'index']);
     Route::get('/isAuthorized' , [AuthController::class , 'isauthorizeUser']);
     Route::post('/logout', [AuthController::class, 'logout']);
+    
+    Route::controller(UserController::class)->group(function(){
+        Route::get('/users' , 'index');
+        Route::get('/users/{id}' , 'show');
+        Route::put('/users/{id}' , 'update')->name('user.update');
+        Route::delete('/users/{id}' , 'destroy');  
+    });
+
 
     Route::controller(HinoController::class)->group(function(){
         Route::get('/hino' , 'index');

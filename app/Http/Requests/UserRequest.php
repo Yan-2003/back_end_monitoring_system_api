@@ -27,16 +27,23 @@ class UserRequest extends FormRequest
                 'email' => 'required|string|email|max:255',
                 'password' => 'required|min:8',
             ];
-        }else{
+        }
+        if(request()->routeIs('user.update')){
             return [
                 //
-                'email' => 'required|string|email|unique:users|max:255',
                 'first_name' => 'required|string|max:255',
                 'middle_name' => 'string|max:255',
-                'last_name' => 'required|string|max:255',
-                'password' => 'required|min:8',
+                'last_name' => 'required|string|max:255' 
             ];
         }
+        return [
+            //
+            'email' => 'required|string|email|unique:users|max:255',
+            'first_name' => 'required|string|max:255',
+            'middle_name' => 'string|max:255',
+            'last_name' => 'required|string|max:255',
+            'password' => 'required|min:8',
+        ];
 
     }
 }

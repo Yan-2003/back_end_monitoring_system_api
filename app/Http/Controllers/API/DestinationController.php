@@ -115,8 +115,7 @@ class DestinationController extends Controller
         //
         $fare = Fare::select()
                         ->where('destination_id' , $id)
-                        ->delete();
-        
+                        ->delete();      
         $destination = Destination::findOrFail($id);
         $destination->delete();
 

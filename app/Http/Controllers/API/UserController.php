@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
+use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -16,7 +17,7 @@ class UserController extends Controller
     public function index()
     {
         //
-        return User::all();
+        return User::select()->orderBy('created_at' , 'ASC')->get();
     }
 
     /**
@@ -46,6 +47,9 @@ class UserController extends Controller
     public function show(string $id)
     {
         //
+        $user = User::findOrFail($id);
+
+        return $user;
     }
 
     /**
@@ -59,9 +63,18 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UserRequest $request, string $id)
     {
         //
+        $validated = $request->validated();
+        $user = User::findOrFail($id)
+                        ->update($validated);
+
+        return [
+            'user'=> $user,
+            'message' => 'successfully updated.'
+        ];
+
     }
 
     /**
@@ -70,5 +83,15 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         //
+        $user_transaction = Transaction::select()
+                            ->where('user_id' , $id)
+                            ->delete();
+        $user = User::findOrFail($id)->delete();
+
+        return [
+            'transactions' => $user_transaction,
+            'user' => $user,
+            'message'=> 'successfully deleted.'
+        ];
     }
 }
