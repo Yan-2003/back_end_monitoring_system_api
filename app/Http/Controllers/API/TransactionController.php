@@ -113,6 +113,7 @@ class TransactionController extends Controller
         ->where('transactions.id', $id)
         ->where('users.id', $user->id)
         ->groupBy('transactions.id', 'hino.name', 'users.first_name', 'users.last_name')
+        ->orderBy('date_time' , 'DESC')
         ->get();
 
         return $transaction; 

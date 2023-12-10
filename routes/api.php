@@ -45,6 +45,7 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::get('/hino' , 'index');
         Route::post('/hino' , 'store');
         Route::get('/hino/{id}' , 'show');
+        Route::get('/hino/transactions/{id}' , 'transactions');
         Route::put('/hino/{id}' , 'update');
         Route::delete('/hino/{id}' , 'destroy');
     });
