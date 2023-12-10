@@ -28,6 +28,24 @@ class TransactionController extends Controller
         return $results;
     }
 
+    /**
+     * Display a listing of the resource.
+     */
+    public function collection()
+    {
+        //
+
+        $results = DB::table('transactions as t')
+        ->join('passengers as p', 'p.transaction_id', '=', 't.id')
+        ->join('destination as d', 'd.id', '=', 'p.destination_id')
+        ->join('fare as f', function ($join) {
+            $join->on('f.destination_id', '=', 'd.id')
+                ->where(DB::raw('DATE(t.created_at)'), '=', DB::raw('CURRENT_DATE'));
+        })
+        ->select(DB::raw('SUM(f.fare) as total_fare'))
+        ->first();
+        return $results;
+    }
 
 
 
@@ -75,9 +93,19 @@ class TransactionController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function collection_daily()
     {
         //
+        $results = DB::table('transactions as t')
+        ->join('passengers as p', 'p.transaction_id', '=', 't.id')
+        ->join('destination as d', 'd.id', '=', 'p.destination_id')
+        ->join('fare as f', 'f.destination_id', '=', 'd.id')
+        ->select(DB::raw('SUM(f.fare) as total_fare'), DB::raw('DATE(t.created_at) as date'))
+        ->groupBy('date')
+        ->orderBy('date', 'DESC')
+        ->get();
+
+        return $results;
     }
 
     /**

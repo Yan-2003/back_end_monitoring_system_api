@@ -48,6 +48,7 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::get('/hino/transactions/{id}' , 'transactions');
         Route::put('/hino/{id}' , 'update');
         Route::delete('/hino/{id}' , 'destroy');
+        Route::get('/hino/unit/all' , 'unit');
     });
 
     Route::controller(DestinationController::class)->group(function(){
@@ -74,6 +75,8 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::get('/transactions/bus/{id}' , 'showbus');
         Route::get('/transactions/bus_trip/{id}' , 'index_bus');
         Route::delete('/transactions/{id}' , 'destroy');
+        Route::get('/transactions/collection/today' , 'collection');
+        Route::get('/transactions/collection/all' , 'collection_daily');
     });
 
 

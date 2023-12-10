@@ -33,9 +33,11 @@ class HinoController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function unit()
     {
         //
+        $results = Hino::select(DB::raw('COUNT(hino.id) as units'))->whereNull('hino.deleted_at')->first();
+        return $results;
     }
 
     /**
