@@ -15,6 +15,26 @@ class TransactionController extends Controller
     /**
      * Display a listing of the resource.
      */
+    public function all()
+    {
+        //
+        $results = Transaction::select('transactions.id', 'hino.name', 'transactions.origin', 
+                DB::raw("TO_CHAR(transactions.created_at, 'Mon DD YYYY | HH:MI AM') as date_time"),
+                DB::raw("CONCAT(users.first_name, ' ', users.last_name) as full_name"))
+                ->join('users', 'users.id', '=', 'transactions.user_id')
+                ->join('hino', 'hino.id', '=', 'transactions.bus_id')
+                ->whereNull('hino.deleted_at')
+                ->get();
+        return $results;
+    }
+
+
+
+
+
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
         //

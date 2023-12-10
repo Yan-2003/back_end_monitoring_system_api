@@ -68,6 +68,7 @@ Route::middleware('auth:sanctum')->group(function(){
 
     Route::controller(TransactionController::class)->group(function(){
         Route::get('/transactions', 'index');
+        Route::get('/transactions/all', 'all');
         Route::post('/transactions', 'store');
         Route::get('/transactions/{id}' , 'show');
         Route::get('/transactions/bus/{id}' , 'showbus');
