@@ -25,6 +25,9 @@ class TransactionController extends Controller
                 ->join('hino', 'hino.id', '=', 'transactions.bus_id')
                 ->whereNull('hino.deleted_at')
                 ->get();
+
+
+        
         return $results;
     }
 
@@ -35,15 +38,20 @@ class TransactionController extends Controller
     {
         //
 
-        $results = DB::table('transactions as t')
-        ->join('passengers as p', 'p.transaction_id', '=', 't.id')
+        $results = DB::table('passengers as p')
+        ->join('transactions as t', 'p.transaction_id', '=', 't.id')
         ->join('destination as d', 'd.id', '=', 'p.destination_id')
         ->join('fare as f', function ($join) {
             $join->on('f.destination_id', '=', 'd.id')
+                ->on('f.type', '=' ,'p.type')
                 ->where(DB::raw('DATE(t.created_at)'), '=', DB::raw('CURRENT_DATE'));
         })
         ->select(DB::raw('SUM(f.fare) as total_fare'))
         ->first();
+       /*  $results = DB::raw('SELECT SUM(f.fare) total_fare
+        FROM passengers p INNER JOIN destination d ON d.id = p.destination_id INNER JOIN fare f ON f.destination_id = d.id AND p."type" = f."type" INNER JOIN transactions t ON t.id = p.transaction_id
+        WHERE DATE(t.created_at) = CURRENT_DATE'); */
+
         return $results;
     }
 
@@ -87,6 +95,11 @@ class TransactionController extends Controller
         ->orderBy('date', 'DESC')
         ->orderBy('time', 'DESC')
         ->get();
+
+        
+
+
+
         return $results;
     }
 
@@ -96,11 +109,14 @@ class TransactionController extends Controller
     public function collection_daily()
     {
         //
-        $results = DB::table('transactions as t')
-        ->join('passengers as p', 'p.transaction_id', '=', 't.id')
+        $results = DB::table('passengers as p')
         ->join('destination as d', 'd.id', '=', 'p.destination_id')
-        ->join('fare as f', 'f.destination_id', '=', 'd.id')
-        ->select(DB::raw('SUM(f.fare) as total_fare'), DB::raw('DATE(t.created_at) as date'))
+        ->join('fare as f', function ($join) {
+            $join->on('p.type', '=', 'f.type')
+                ->on('p.destination_id', '=', 'f.destination_id');
+        })
+        ->join('transactions as t' ,'t.id' , '=' , 'p.transaction_id')
+        ->select(DB::raw('SUM(f.fare) as total_fare'), DB::raw("TO_CHAR(t.created_at, 'Mon DD YYYY') as date"))
         ->groupBy('date')
         ->orderBy('date', 'DESC')
         ->get();
